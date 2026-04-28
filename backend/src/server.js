@@ -1,12 +1,22 @@
+import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { app } from "./app.js";
 import { connectDB } from "./config/db.js";
 import { setSocketServer } from "./socket.js";
 
+dotenv.config();
+
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
+  console.log("Starting server...");
+  console.log("Environment check:", {
+    hasMongoUri: Boolean(process.env.MONGODB_URI),
+    hasJwtSecret: Boolean(process.env.JWT_SECRET),
+    clientUrl: process.env.CLIENT_URL || "missing",
+    port: PORT,
+  });
   await connectDB();
 
   const server = createServer(app);
@@ -33,7 +43,7 @@ const startServer = async () => {
 };
 
 startServer().catch((error) => {
-  console.error("Failed to start server", error);
+  console.error("Failed to start server:", error.message);
   process.exit(1);
 });
 
